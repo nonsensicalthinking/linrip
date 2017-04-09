@@ -37,6 +37,7 @@ Your directory structure should now resemble something like this:
     * dts_orig/
     * dts_temp/
     * handbrake_input/
+    * handbrake_input\_orig/
     * handbrake_output/
     * LICENSE
     * README.md
