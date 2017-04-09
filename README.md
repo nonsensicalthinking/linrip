@@ -58,13 +58,13 @@ Currently the script only supports two main modes of operation
 
 If you're going to run DTS through the conversion process, simply drop your DTS files into the `/path/to/linrip/base/directory/dts` folder. 
 
-Run linrip with the following command: `linrip`
+Run linrip with the following command: `linrip.sh`
 
 #### 2) Other video types
 
 If you're going to run another type of video file through the conversion process, simply drop your video files into the `/path/to/linrip/base/directory/handbrake_input` directory.
 
-Run linrip with the following command: `linrip -u`
+Run linrip with the following command: `linrip.sh -u`
 
 ### Usage Options
 #### One and done
