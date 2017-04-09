@@ -377,7 +377,7 @@ until [ $STOP_LOOPING -eq 1 ]; do
 
 				mkdir -p $VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH
 
-				AC3_FULL_OUTPUT_PATH=$VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH${NEXT_FILE%.*}"_ac3.mkv"
+				AC3_FULL_OUTPUT_PATH=$VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH${NEXT_FILE%.*}"-ac3.mkv"
 
 				#Convert DTS track to AC3
 				if [ $DEBUG -eq 1 ];
@@ -531,12 +531,11 @@ until [ $STOP_LOOPING -eq 1 ]; do
 			fi
 		fi
 
-		#cpulimit has exited which means HandBrakeCLI process has terminated
-		timestamp "Moving AC3 file to final folder..." >> $LOG_FILE
 
 		#Move the original file to the processed location
 		if [ $SAVE_HANDBRAKE_INPUT -eq 1 ];
 		then
+			#cpulimit has exited which means HandBrakeCLI process has terminated
 			timestamp "Moving HandBrake input file in this location: $VIDEO_HANDBRAKE_FINISHED_PATH$NEXT_PATH$NEXT_FILE" >> $LOG_FILE
 			mkdir -p $VIDEO_HANDBRAKE_FINISHED_PATH$NEXT_PATH
 			mv $HANDBRAKE_INPUT $VIDEO_HANDBRAKE_FINISHED_PATH$NEXT_PATH$NEXT_FILE
