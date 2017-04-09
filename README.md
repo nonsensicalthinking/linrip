@@ -81,14 +81,14 @@ This command will exit after running.
     linrip.sh -h
 
 #### Change script's folder search criteria
-This will override the default search criteria.  This script uses find to locate the next file to process. The find command takes search criteria and this is where you specify that. Default search criteria is "*.mkv".
+This will override the default search criteria.  This script uses `find` to locate the next file to process. The `find` command takes search criteria and this is where you specify that. Default search criteria is `"*.mkv"`.
 
     linrip.sh -e "*.mkv"
 
 #### Initialize linrip rc file
-This command will exit after running.
+The script is located in the `/path/to/linrip/base/directory/bin` directory. This command will exit after running.
 
-    linrip.sh -i "/path/to/working/directory"
+    linrip.sh -i "/path/to/linrip/base/directory"
 
 #### HandBrake: HandBrake GUI Preset Name
 This is the name of the preset in the HandBrake GUI.  If there are no spaces in the name you can omit the quotations around the preset name, if there are spaces, you'll need them.
