@@ -124,6 +124,7 @@ Example `.linrip.rc` file:
     SAVE_DTS_INPUT=1
     SKIP_DTS=0
     SILENT_MODE=0
+    FILE_SEARCH_CRITERIA="*.mkv"
 
     #DTS FOLDERS
     _DTS_FOLDER="dts/"
@@ -137,6 +138,9 @@ Example `.linrip.rc` file:
     _HANDBRAKE_OUTPUT_FOLDER="handbrake_output/"
     _HANDBRAKE_ERROR_FOLDER="handbrake_error/"
 
-
+    #HANDBRAKE SETTINGS
+    LIMIT_CPU=1
+    HANDBRAKE_CPU_LIMIT=500
+    HANDBRAKE_PRESET_NAME="HPDRC2"
 
 More coming soon.
