@@ -116,6 +116,7 @@ Override the default CPU Limit setting. This is in percent of CPU usage.  Single
     linrip.sh -l 500
 
 ### Configuration Variables
+Example `.linrip.rc` file:
 
     VIDEO_BASE_PATH="/home/user1/linrip"
     VIDEO_OUTPUT_PATH="/output/path"
