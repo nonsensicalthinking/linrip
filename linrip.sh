@@ -167,8 +167,6 @@ initLinRip()	{
 LINRIP_RC_PATH="$HOME/.linrip.rc"
 
 readRc()	{
-	#TODO perform check to see if file exists before reading the rc file
-
 	if [ -e $LINRIP_RC_PATH ];
 	then
 		source $LINRIP_RC_PATH
