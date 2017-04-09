@@ -37,7 +37,7 @@ Currently the script only supports two main modes of operation
 -OR-
 2. Run any video file (supported by HandBrake) through HandBrakeCLI
 
-**IMPORTANT** It is important to note that the script will maintain the directory structure within the `/video/base/path/dts` directory or the `/video/base/path/ac3` directory so you could do something like `/video/base/path/dts/x_files/s1/s1e1.mkv` and the output directory will be `/handbrake/output/directory/x_files/s1/s1e1.mkv`
+**IMPORTANT** It is important to note that the script will maintain the directory structure within the `/path/to/linrip/base/directory/dts` directory or the `/path/to/linrip/base/directory/ac3` directory so you could do something like `/path/to/linrip/base/directory/dts/x_files/s1/s1e1.mkv` and the output directory will be `/handbrake/output/directory/x_files/s1/s1e1.mkv`
 
 #### 1) DTS
 
