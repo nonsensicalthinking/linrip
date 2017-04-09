@@ -36,6 +36,8 @@ Currently the script only supports two main modes of operation
 -OR-
 2. Run an AC3 file through HandBrakeCLI
 
+**IMPORTANT** It is important to note that the script will maintain the directory structure within the `/video/base/path/dts` directory or the `/video/base/path/ac3` directory so you could do something like `/video/base/path/dts/x_files/s1/s1e1.mkv` and the output directory will be `/handbrake/output/directory/x_files/s1/s1e1.mkv`
+
 #### 1) DTS
 
 If you're going to run DTS through the conversion process, simply drop your DTS files into the `/video/base/path/dts` folder. 
@@ -44,7 +46,7 @@ Run linrip with the following command: `linrip`
 
 #### 2) AC3
 
-If you're going to run AC3 through the conversion process, simply drop your AC3 files into the `/video/base/path/ac3` folder.
+If you're going to run AC3 through the conversion process, simply drop your AC3 files into the `/video/base/path/ac3` directory.
 
 Run linrip with the following command: `linrip -u`
 
