@@ -289,9 +289,6 @@ then
 	exit 0
 fi
 
-echo "Early termination for saftey"
-exit 0
-
 preventMultipleInstances
 
 queueNextFile
