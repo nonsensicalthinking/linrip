@@ -96,7 +96,7 @@ This is the name of the preset in the HandBrake GUI.  If there are no spaces in 
     linrip.sh -p "Preset Name"
 
 #### HandBrake: Limit CPU of HandBrakeCLI process
-Override the default CPU Limit setting. This is in percent of CPU usage.  Single core CPU -l 100 is max. Eight core CPU -l 800 is max. This command is available so you can continue to use the machine in the background while grooming your MKVs. Default is 500.
+Override the default CPU Limit setting. This is in percent of CPU usage.  Single core CPU -l 100 is max. Eight core CPU -l 800 is max. This command is available so you can continue to use the machine in the background while grooming your MKVs. Default is `500`.
 
     linrip.sh -l 500
 
