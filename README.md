@@ -24,8 +24,22 @@ these can be obtained via apt in Ubuntu 16.
 1. Clone the project to a drive with lots of free storage space.  This will be your conversion working directory where files will be stored while they are moved through the conversion process. `git clone https://github.com/nonsensicalthinking/linrip.git`
 1. Navigate to the linrip clone/bin directory `/path/to/linrip/base/directory/bin` and run the command: `./linrip.sh -i "/path/to/linrip/base/directory"`
 (NOTE: The video base directory specified by the -i flag should be on a drive which has lots of space, this will be the working directory for the script).
-1. Check the working directory's folder structure by running the command: `./linrip.sh -c` This will automatically create any missing directories.
 1. Edit the `~/.linrip.rc` file to your liking. See the config variables section below for more information on the rc file.
+1. Check the working directory's folder structure by running the command: `./linrip.sh -c` This will automatically create any missing directories.
+
+Your directory structure should now resemble something like this:
+* linrip/
+    * bin/
+        * linrip.sh
+        * mkvdts2ac3.sh
+    * dts/
+    * dts_error/
+    * dts_orig/
+    * dts_temp/
+    * handbrake_input/
+    * handbrake_output/
+    * LICENSE
+    * README.md
 
 ### Usage
 
