@@ -1,8 +1,8 @@
 # linrip
-Linux BluRay Grooming Script. Convert DTS to AC3 for audio normalization in HandBrake. Process video file using HandBrakeCLI using HandBrake GUI Presets. The script maintains directory structures of the input directories (see more about this in the usage section). You can skip the DTS to AC3 conversion step using the `-u` flag.  Don't get trapped in the mindset! The HandBrakeCLI input file format doesn't need to be AC3!
+Linux BluRay Grooming Script. Convert DTS to AC3 for audio normalization in HandBrake. Process video file using HandBrakeCLI using HandBrake GUI Presets. The script maintains directory structures of the input directories (see more about this in the usage section). You can skip the DTS to AC3 conversion step using the `-u` flag.  Don't get trapped in the mindset! The HandBrakeCLI input file format doesn't need to be AC3!  This script will process files found in the designated input directory one by one in a fifo order until all files are processed, unless you specify the `-1` one and done option.
 
 ## Usage
-Most BluRay videos these days are some form of DTS and many times they are annoyingly soft and suddenly loud.  This script was designed to take MKV files with DTS* audio and convert the MKV file's audio to AC3 so the audio hints are there.  This is the only way to utilize HandBrake's Dynamic Range Compression (DRC).  __This feature ONLY WORKS WITH AC3 AUDIO__.
+Most BluRay videos these days are some form of DTS and many times they are annoyingly soft and suddenly loud.  This script was designed to take MKV files with DTS* audio and convert the MKV file's audio to AC3 so the audio hints are there.  This is the only way to utilize HandBrake's Dynamic Range Compression (DRC).  __This feature only works with AC3 audio__.
 
 ### Prerequisites
 
@@ -21,10 +21,10 @@ these can be obtained via apt in Ubuntu 16.
 * rsync
 
 ### Configuration
-1. Clone the project to a drive with lots of storage.  This will be your conversion working directory where files will be stored while they are moved through the conversion process. `git clone https://github.com/nonsensicalthinking/linrip.git`
-1. Navigate to the linrip clone directory and run the command: `./linrip.sh -i "/path/to/video/base/directory"`
-(NOTE: The video base directory specified by the -i flag should be on a drive which has lots of space, this will be the working directory for the script.)
-1. Check the working directory's folder structure by running the command: `./linrip.sh -c`
+1. Clone the project to a drive with lots of free storage space.  This will be your conversion working directory where files will be stored while they are moved through the conversion process. `git clone https://github.com/nonsensicalthinking/linrip.git`
+1. Navigate to the linrip clone/bin directory `/path/to/linrip/base/directory/bin` and run the command: `./linrip.sh -i "/path/to/linrip/base/directory"`
+(NOTE: The video base directory specified by the -i flag should be on a drive which has lots of space, this will be the working directory for the script).
+1. Check the working directory's folder structure by running the command: `./linrip.sh -c` This will automatically create any missing directories.
 1. Edit the `~/.linrip.rc` file to your liking. See the config variables section below for more information on the rc file.
 
 ### Usage
@@ -35,27 +35,25 @@ Currently the script only supports two main modes of operation
 
 1. Convert a DTS file to AC3 then Running the AC3 file through HandBrakeCLI
 -OR-
-2. Run an AC3 file through HandBrakeCLI
+2. Run any video file (supported by HandBrake) through HandBrakeCLI
 
 **IMPORTANT** It is important to note that the script will maintain the directory structure within the `/video/base/path/dts` directory or the `/video/base/path/ac3` directory so you could do something like `/video/base/path/dts/x_files/s1/s1e1.mkv` and the output directory will be `/handbrake/output/directory/x_files/s1/s1e1.mkv`
 
 #### 1) DTS
 
-If you're going to run DTS through the conversion process, simply drop your DTS files into the `/video/base/path/dts` folder. 
+If you're going to run DTS through the conversion process, simply drop your DTS files into the `/path/to/linrip/base/directory/dts` folder. 
 
 Run linrip with the following command: `linrip`
 
-#### 2) AC3
+#### 2) Other video types
 
-If you're going to run AC3 through the conversion process, simply drop your AC3 files into the `/video/base/path/ac3` directory.
+If you're going to run another type of video file through the conversion process, simply drop your video files into the `/path/to/linrip/base/directory/handbrake_input` directory.
 
 Run linrip with the following command: `linrip -u`
 
-
 ### Usage Options
-
 #### One and done
-You only want to run on one file, the first file found by the search criteria
+You only want to process one file, the first file found by the search criteria
 
     linrip.sh -1
 
