@@ -1,7 +1,7 @@
 #!/bin/bash
 ####################################################################################################################################################
 ## linrip.sh - Linux BluRay Video Groomer
-## by smutpirate
+## by nonsensicalthinking
 ## 
 ## This script relies on 
 ## 

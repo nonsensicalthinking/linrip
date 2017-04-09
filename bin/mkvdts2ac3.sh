@@ -1,5 +1,5 @@
 #!/bin/bash
-# This file has been modified by smutpirate to add additional options
+# This file has been modified by nonsensicalthinking to add additional options
 # and recognize additional DTS types such as DTS-ES.
 #
 # -ORIGINAL CREDITS BELOW-
