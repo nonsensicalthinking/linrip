@@ -1,5 +1,5 @@
 # linrip
-Linux BluRay Grooming Script. Convert DTS to AC3 for audio normalization in HandBrake. Process video file using HandBrakeCLI using HandBrake GUI Presets.
+Linux BluRay Grooming Script. Convert DTS to AC3 for audio normalization in HandBrake. Process video file using HandBrakeCLI using HandBrake GUI Presets. The script maintains directory structures of the input directories (see more about this in the usage section). You can skip the DTS to AC3 conversion step using the `-u` flag.  Don't get trapped in the mindset! The HandBrakeCLI input file format doesn't need to be AC3!
 
 ## Usage
 Most BluRay videos these days are some form of DTS and many times they are annoyingly soft and suddenly loud.  This script was designed to take MKV files with DTS* audio and convert the MKV file's audio to AC3 so the audio hints are there.  This is the only way to utilize HandBrake's Dynamic Range Compression (DRC).  __This feature ONLY WORKS WITH AC3 AUDIO__.

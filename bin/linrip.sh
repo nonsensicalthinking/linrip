@@ -150,24 +150,25 @@ customExit() {
 	exit 0
 }
 
-
 initLinRip()	{
 	touch $LINRIP_RC_PATH
 
-	if [ -z INIT_HOME_PATH ];
+	if [ -z "$INIT_HOME_PATH" ];
 	then
 		echo "VIDEO_BASE_PATH=\".\"" >> $LINRIP_RC_PATH
 	else
 		echo "VIDEO_BASE_PATH=\"$INIT_HOME_PATH\"" >> $LINRIP_RC_PATH
 	fi
-	echo "#default argument string example: " >> $LINRIP_RC_PATH
-	echo "#DEFAULT_ARG_STRING=\"-1 -u -o \"/path/to/output\"\"" >> $LINRIP_RC_PATH
+
+	echo "VIDEO_OUTPUT_PATH=\"\"" >> $LINRIP_RC_PATH
+	echo "SAVE_HANDBRAKE_INPUT=1" >> $LINRIP_RC_PATH
+	echo "SAVE_DTS_INPUT=1" >> $LINRIP_RC_PATH
 }
 
 LINRIP_RC_PATH="$HOME/.linrip.rc"
 
 readRc()	{
-	if [ -e $LINRIP_RC_PATH ];
+	if [ -e "$LINRIP_RC_PATH" ];
 	then
 		source $LINRIP_RC_PATH
 		echo "RC VIDEO_BASE_PATH: $VIDEO_BASE_PATH"
@@ -179,8 +180,6 @@ readRc()	{
 ############################################################################################################
 ############ BEGIN PROCESS
 ############################################################################################################
-EXIT_ARG_ERROR=0
-EXIT_ARG_NO_ERROR=0
 
 readRc
 
@@ -200,12 +199,12 @@ VIDEO_INPUT_PROCESSED="$VIDEO_BASE_PATH/dts_orig/"							#LOCATION OF ORIGINAL M
 VIDEO_ERROR_PATH="$VIDEO_BASE_PATH/dts_error/"								#LOCATION OF ORIGINAL MKV/DTS FILES IF THERE WAS AN ERROR
 VIDEO_TEMP_PATH="$VIDEO_BASE_PATH/dts_temp/"								#TEMPORARY STORAGE PATH FOR CONVERTING DTS TO AC3
 ##
-VIDEO_AC3_PATH="$VIDEO_BASE_PATH/ac3/"										#LOCATION OF MKV/AC3 FILES TO BE COMPRESSED AND NORMALIZED
-VIDEO_AC3_FINISHED_PATH="$VIDEO_BASE_PATH/ac3_orig/"						#LOCATION OF MKV/AC3 "ORIGINAL"
-VIDEO_ERROR_OUTPUT_PATH="$VIDEO_BASE_PATH/ac3_error/"						#LOCATION OF MKV/AC3 "ORIGINAL" IF THERE WAS AN ERROR
+VIDEO_AC3_PATH="$VIDEO_BASE_PATH/handbrake_input/"							#LOCATION OF MKV/AC3 FILES TO BE COMPRESSED AND NORMALIZED
+VIDEO_AC3_FINISHED_PATH="$VIDEO_BASE_PATH/handbrake_input_orig/"			#LOCATION OF MKV/AC3 "ORIGINAL"
+VIDEO_ERROR_OUTPUT_PATH="$VIDEO_BASE_PATH/handbrake_error/"					#LOCATION OF MKV/AC3 "ORIGINAL" IF THERE WAS AN ERROR
 VIDEO_NORMALIZED_PATH="$VIDEO_BASE_PATH/handbrake_output/"					#LOCATION OF COMPRESSED & NORMALIZED MKV/AC3
 ##
-VIDEO_OUTPUT_PATH="/media/smut/Storage/Videos/BluRay/Cinema/normalized/"	#FINAL RESTING LOCATION OF MKV/AC3 COMPRESSED & NORMALIZED
+#VIDEO_OUTPUT_PATH=""	#FINAL RESTING LOCATION OF MKV/AC3 COMPRESSED & NORMALIZED
 ##
 ## Handbrake - these can also be set as command line arguments!
 HANDBRAKE_CPU_LIMIT=500														#HANDBRAKE CPU LIMIT IN PERCENT
@@ -222,6 +221,8 @@ LOG_FILE="$VIDEO_BASE_PATH/conversion.log"
 ##
 DEBUG=0
 ##
+EXIT_ARG_ERROR=0
+EXIT_ARG_NO_ERROR=0
 
 while getopts "uhdco:p:l:e:b:i:" o; do
     case "${o}" in
@@ -327,7 +328,7 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 			timestamp "Next video format: $NXTFMT" >> $LOG_FILE
 
 			#What do we do with the video based on its format...
-			if [ $NXTFMT == "DTS" ] 
+			if [ "$NXTFMT" == "DTS" ];
 			then
 				timestamp "Converting to AC3..." >> $LOG_FILE
 
@@ -348,7 +349,7 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 
 				timestamp "Exit status of AC3 Conversion: $AC3_EXIT_STATUS" >> $LOG_FILE
 
-				if [ $AC3_EXIT_STATUS -eq 1 ]
+				if [ $AC3_EXIT_STATUS -eq 1 ];
 				then
 					AC3_ERROR_OUTPUT_PATH=$VIDEO_ERROR_OUTPUT_PATH$NEXT_PATH
 					mkdir -p $AC3_ERROR_OUTPUT_PATH
@@ -368,7 +369,7 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 
 					mkvpropedit $AC3_FULL_OUTPUT_PATH --edit info --set "title=$CURRENT_TITLE.AC3"
 				fi
-			elif [ $NXTFMT == "AC-3" ] 
+			elif [ "$NXTFMT" == "AC-3" ];
 			then
 				timestamp "File is already AC3." >> $LOG_FILE
 				mkdir -p $VIDEO_AC3_PATH$NEXT_PATH
@@ -380,11 +381,14 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 				mv $NEXT_VIDEO_TO_PROCESS $VIDEO_ERROR_PATH$NEXT_PATH$NEXT_FILE
 			fi
 
-			timestamp "Moving file to processed folder..." >> $LOG_FILE
-			mkdir -p $VIDEO_INPUT_PROCESSED$NEXT_PATH
-			mv $NEXT_VIDEO_TO_PROCESS $VIDEO_INPUT_PROCESSED$NEXT_PATH$NEXT_FILE
-		
-			timestamp "Moved $NEXT_VIDEO_TO_PROCESS to $VIDEO_INPUT_PROCESSED$NEXT_PATH$NEXT_FILE" >> $LOG_FILE
+			if [ $SAVE_DTS_INPUT -eq 1 ];
+			then
+				timestamp "Moving file to processed folder..." >> $LOG_FILE
+				mkdir -p $VIDEO_INPUT_PROCESSED$NEXT_PATH
+				mv $NEXT_VIDEO_TO_PROCESS $VIDEO_INPUT_PROCESSED$NEXT_PATH$NEXT_FILE
+			
+				timestamp "Moved $NEXT_VIDEO_TO_PROCESS to $VIDEO_INPUT_PROCESSED$NEXT_PATH$NEXT_FILE" >> $LOG_FILE
+			fi
 		fi
 	fi
 	######################################
@@ -439,7 +443,7 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 			#Check if we have another handbrake session running currently...
 			HANDBRAKE_PID=$(ps -eo pid,command | grep -v "SCREEN -d -m sh -c HandBrakeCLI" | grep -v "sh -c HandBrakeCLI" | grep "HandBrakeCLI" | grep -v grep | awk '{print $1}')
 			
-			if [ -z $HANDBRAKE_PID ];
+			if [ -z "$HANDBRAKE_PID" ];
 			then
 				#Execute Handbrake command
 				screen -d -m sh -c "$HANDBRAKE_CLI_COMMAND"
@@ -464,12 +468,24 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 		timestamp "Moving AC3 file to final folder..." >> $LOG_FILE
 
 		#Move the original file to the processed location
-		mkdir -p $VIDEO_AC3_FINISHED_PATH$NEXT_PATH
-		mv $HANDBRAKE_INPUT $VIDEO_AC3_FINISHED_PATH$NEXT_PATH$NEXT_FILE
+		if [ $SAVE_HANDBRAKE_INPUT -eq 1 ];
+		then
+			timestamp "Moving HandBrake input file in this location: $VIDEO_AC3_FINISHED_PATH$NEXT_PATH$NEXT_FILE" >> $LOG_FILE
+			mkdir -p $VIDEO_AC3_FINISHED_PATH$NEXT_PATH
+			mv $HANDBRAKE_INPUT $VIDEO_AC3_FINISHED_PATH$NEXT_PATH$NEXT_FILE
+		else
+			timestamp "Deleting HandBrake input file: $HANDBRAKE_INPUT"
+			rm $HANDBRAKE_INPUT
+		fi
 
-		#Move the compressed/normalized file to its final destination
-		mkdir -p $VIDEO_OUTPUT_PATH$NEXT_PATH
-		mv $HANDBRAKE_OUTPUT $VIDEO_OUTPUT_PATH$NEXT_PATH_$NEXT_FILE
+		if [ -z "$VIDEO_OUTPUT_PATH" ];
+		then
+			#Move the compressed/normalized file to its final destination
+			timestamp "Moving the finished product to the $VIDEO_OUTPUT_PATH$NEXT_PATH_$NEXT_FILE" >> $LOG_FILE
+			mkdir -p $VIDEO_OUTPUT_PATH$NEXT_PATH
+			mv $HANDBRAKE_OUTPUT $VIDEO_OUTPUT_PATH$NEXT_PATH_$NEXT_FILE
+		fi
+
 		timestamp "Finished processing." >> $LOG_FILE
 	fi
 
