@@ -121,6 +121,21 @@ Override the default CPU Limit setting. This is in percent of CPU usage.  Single
     VIDEO_OUTPUT_PATH="/output/path"
     SAVE_HANDBRAKE_INPUT=1
     SAVE_DTS_INPUT=1
+    SKIP_DTS=0
+    SILENT_MODE=0
+
+    #DTS FOLDERS
+    _DTS_FOLDER="dts/"
+    _DTS_OUTPUT_FOLDER="dts_orig/"
+    _DTS_ERROR_FOLDER="dts_error/"
+    _DTS_TEMP_FOLDER="dts_temp/"
+
+    #HANDBRAKE FOLDERS
+    _HANDBRAKE_INPUT_FOLDER="handbrake_input/"
+    _HANDBRAKE_INPUT_ORIG_FOLDER="handbrake_input_orig/"
+    _HANDBRAKE_OUTPUT_FOLDER="handbrake_output/"
+    _HANDBRAKE_ERROR_FOLDER="handbrake_error/"
+
 
 
 More coming soon.

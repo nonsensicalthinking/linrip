@@ -655,7 +655,7 @@ fi
 # If we are creating an adjacent file adjust the name of the original
 if [ $NEW = 1 ]; then
 	if [ $NEWFOLDER = 1 ]; then
-		MKVFILE="$NEWFOLDERPATH/$NAME""_ac3.mkv"
+		MKVFILE="$NEWFOLDERPATH/$NAME-ac3.mkv"
 	else
 		MKVFILE="$DEST/$NAME-AC3.mkv"
 	fi

@@ -213,6 +213,8 @@ readRc
 ##
 LINRIP_PID_FILE="$VIDEO_BASE_PATH/linrip.pid"												#SAFTEY TO PREVENT MULTIPLE INSTANCES FROM RUNNING
 ##
+LINRIP_BIN_PATH="$VIDEO_BASE_PATH/bin"														#PATH TO LINRIP SCRIPTS
+##
 FILE_SEARCH_CRITERIA="*.mkv"																#PATTERN TO USE FOR SCANNING MKV/DTS & MKV/AC3 FOLDERS
 ##
 VIDEO_INPUT_PATH="$VIDEO_BASE_PATH/$_DTS_FOLDER"											#LOCATION OF ORIGINAL MKV/DTS FILES
@@ -337,11 +339,11 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 		OUTPUT_LOCATION="$TARGET_DIR$NEXT_PATH"
 		# =================================================================================== #
 
-		timestamp "] NEXT_VIDEO_TO_PROCESS: $NEXT_VIDEO_TO_PROCESS" >> $LOG_FILE
-		timestamp "] NEXT_FILE_PATH_TRIMMED: $NEXT_FILE_PATH_TRIMMED" >> $LOG_FILE
-		timestamp "] NEXT_PATH: $NEXT_PATH" >> $LOG_FILE
-		timestamp "] NEXT_FILE: $NEXT_FILE" >> $LOG_FILE
-		timestamp "] OUTPUT_LOCATION: $OUTPUT_LOCATION" >> $LOG_FILE
+		timestamp "[VAR] NEXT_VIDEO_TO_PROCESS: $NEXT_VIDEO_TO_PROCESS" >> $LOG_FILE
+		timestamp "[VAR] NEXT_FILE_PATH_TRIMMED: $NEXT_FILE_PATH_TRIMMED" >> $LOG_FILE
+		timestamp "[VAR] NEXT_PATH: $NEXT_PATH" >> $LOG_FILE
+		timestamp "[VAR] NEXT_FILE: $NEXT_FILE" >> $LOG_FILE
+		timestamp "[VAR] OUTPUT_LOCATION: $OUTPUT_LOCATION" >> $LOG_FILE
 
 		######################################
 		############ STEP 1 - DTS* -> AC3
@@ -372,7 +374,9 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 					touch $AC3_FULL_OUTPUT_PATH
 					AC3_EXIT_STATUS=0
 				else
-					MKVDTS2AC3_COMMAND="mkvdts2ac3.sh -n --wd $VIDEO_TEMP_PATH --new -nf \"$VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH\" $NEXT_VIDEO_TO_PROCESS"
+					MKVDTS2AC3_COMMAND="$LINRIP_BIN_PATH/mkvdts2ac3.sh -n --wd $VIDEO_TEMP_PATH --new -nf $VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH $NEXT_VIDEO_TO_PROCESS"
+
+					timestamp "MKVDTS2AC3_COMMAND: $MKVDTS2AC3_COMMAND" >> $LOG_FILE
 
 					if [ $SILENT_MODE -eq 1 ];
 					then
@@ -459,11 +463,11 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 		HANDBRAKE_PRESET="--preset-import-gui -Z $HANDBRAKE_PRESET_NAME"	#Use GUI Presets
 	      # =================================================================================== #
 
-		timestamp "] HANDBRAKE_CPU_LIMIT: $HANDBRAKE_CPU_LIMIT" >> $LOG_FILE
-		timestamp "] HANDBRAKE_PRESET_NAME: $HANDBRAKE_PRESET_NAME" >> $LOG_FILE
-		timestamp "] HANDBRAKE_INPUT: $HANDBRAKE_INPUT" >> $LOG_FILE
-		timestamp "] HANDBRAKE_OUTPUT: $HANDBRAKE_OUTPUT" >> $LOG_FILE
-		timestamp "] HANDBRAKE_PRESET: $HANDBRAKE_PRESET" >> $LOG_FILE
+		timestamp "[VAR] HANDBRAKE_CPU_LIMIT: $HANDBRAKE_CPU_LIMIT" >> $LOG_FILE
+		timestamp "[VAR] HANDBRAKE_PRESET_NAME: $HANDBRAKE_PRESET_NAME" >> $LOG_FILE
+		timestamp "[VAR] HANDBRAKE_INPUT: $HANDBRAKE_INPUT" >> $LOG_FILE
+		timestamp "[VAR] HANDBRAKE_OUTPUT: $HANDBRAKE_OUTPUT" >> $LOG_FILE
+		timestamp "[VAR] HANDBRAKE_PRESET: $HANDBRAKE_PRESET" >> $LOG_FILE
 
 	      # =================================================================================== #
 		#Configure Handbrake command
