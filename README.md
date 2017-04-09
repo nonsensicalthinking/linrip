@@ -8,7 +8,7 @@ Most BluRay videos these days are some form of DTS and many times they are annoy
 
 * HandBrake
 * HandBrakeCLI
-* mkvdts2ac3.sh (my modified version is included in this project)
+* mkvdts2ac3.sh (my modified version is included in this project, original can be found here: https://github.com/JakeWharton/mkvdts2ac3)
 * Plenty 'o disk space
 
 Requirements for mkvdts2ac3.sh (see also: https://github.com/JakeWharton/mkvdts2ac3)
@@ -21,7 +21,7 @@ these can be obtained via apt in Ubuntu 16.
 * rsync
 
 ### Configuration
-
+1. Clone the project to a drive with lots of storage.  This will be your conversion working directory where files will be stored while they are moved through the conversion process. `git clone https://github.com/nonsensicalthinking/linrip.git`
 1. Navigate to the linrip clone directory and run the command: `./linrip.sh -i "/path/to/video/base/directory"`
 (NOTE: The video base directory specified by the -i flag should be on a drive which has lots of space, this will be the working directory for the script.)
 1. Check the working directory's folder structure by running the command: `./linrip.sh -c`
