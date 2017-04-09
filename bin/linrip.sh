@@ -386,8 +386,10 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 				timestamp "Moving file to processed folder..." >> $LOG_FILE
 				mkdir -p $VIDEO_INPUT_PROCESSED$NEXT_PATH
 				mv $NEXT_VIDEO_TO_PROCESS $VIDEO_INPUT_PROCESSED$NEXT_PATH$NEXT_FILE
-			
 				timestamp "Moved $NEXT_VIDEO_TO_PROCESS to $VIDEO_INPUT_PROCESSED$NEXT_PATH$NEXT_FILE" >> $LOG_FILE
+			else
+				timestamp "Deleting DTS input file: $NEXT_VIDEO_TO_PROCESS"
+				rm $NEXT_VIDEO_TO_PROCESS
 			fi
 		fi
 	fi

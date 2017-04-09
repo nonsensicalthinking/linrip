@@ -25,6 +25,7 @@ these can be obtained via apt in Ubuntu 16.
 1. Navigate to the linrip clone directory and run the command: `./linrip.sh -i "/path/to/video/base/directory"`
 (NOTE: The video base directory specified by the -i flag should be on a drive which has lots of space, this will be the working directory for the script.)
 1. Check the working directory's folder structure by running the command: `./linrip.sh -c`
+1. Edit the `~/.linrip.rc` file to your liking. See the config variables section below for more information on the rc file.
 
 ### Usage
 
@@ -101,4 +102,12 @@ Override the default CPU Limit setting. This is in percent of CPU usage.  Single
 
     linrip.sh -l 500
 
+### Configuration Variables
 
+    VIDEO_BASE_PATH="/home/user1/linrip"
+    VIDEO_OUTPUT_PATH="/output/path"
+    SAVE_HANDBRAKE_INPUT=1
+    SAVE_DTS_INPUT=1
+
+
+More coming soon.
