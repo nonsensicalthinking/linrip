@@ -73,10 +73,10 @@ checkFileStructure() {
 		mkdir -p $VIDEO_INPUT_PROCESSED
 	fi
 
-	if [ ! -d $VIDEO_AC3_PATH ];
+	if [ ! -d $VIDEO_HANDBRAKE_INPUT_PATH ];
 	then
-		echo "Creating AC3 folder... [$VIDEO_AC3_PATH]"
-		mkdir -p $VIDEO_AC3_PATH
+		echo "Creating AC3 folder... [$VIDEO_HANDBRAKE_INPUT_PATH]"
+		mkdir -p $VIDEO_HANDBRAKE_INPUT_PATH
 	fi
 
 	if [ ! -d $VIDEO_AC3_FINISHED ];
@@ -85,10 +85,10 @@ checkFileStructure() {
 		mkdir -p $VIDEO_AC3_FINISHED
 	fi
 
-	if [ ! -d $VIDEO_NORMALIZED_PATH ];
+	if [ ! -d $VIDEO_HANDBRAKE_OUTPUT_PATH ];
 	then
-		echo "Creating HandBrake output folder... [$VIDEO_NORMALIZED_PATH]"
-		mkdir -p $VIDEO_NORMALIZED_PATH
+		echo "Creating HandBrake output folder... [$VIDEO_HANDBRAKE_OUTPUT_PATH]"
+		mkdir -p $VIDEO_HANDBRAKE_OUTPUT_PATH
 	fi
 
 	if [ ! -d $VIDEO_OUTPUT_PATH ];
@@ -97,10 +97,10 @@ checkFileStructure() {
 		mkdir -p $VIDEO_OUTPUT_PATH
 	fi
 
-	if [ ! -d $VIDEO_ERROR_OUTPUT_PATH ];
+	if [ ! -d $VIDEO_HANDBRAKE_ERROR_PATH ];
 	then
-		echo "Creating HandBrake Error output folder... [$VIDEO_ERROR_OUTPUT_PATH]"
-		mkdir -p $VIDEO_ERROR_OUTPUT_PATH
+		echo "Creating HandBrake Error output folder... [$VIDEO_HANDBRAKE_ERROR_PATH]"
+		mkdir -p $VIDEO_HANDBRAKE_ERROR_PATH
 	fi
 }
 
@@ -136,6 +136,11 @@ showHelp() {
 	echo "	i - Initialize the .linriprc file."
 	echo "		eg. -i \"/path/to/video_base_directory\""
 	echo
+	echo "	s - Silent. No logging, no echo."
+	echo
+	echo "	v - Set log file output to stdout instead of"
+	echo "		the file on disk."
+	echo
 	echo " HandBrake Settings..."
 	echo "	p - HandBrake GUI Preset Name "
 	echo "	    eg. -p PresetName or -p Preset Name"
@@ -163,6 +168,21 @@ initLinRip()	{
 	echo "VIDEO_OUTPUT_PATH=\"\"" >> $LINRIP_RC_PATH
 	echo "SAVE_HANDBRAKE_INPUT=1" >> $LINRIP_RC_PATH
 	echo "SAVE_DTS_INPUT=1" >> $LINRIP_RC_PATH
+	echo "SKIP_DTS=0" >> $LINRIP_RC_PATH
+	echo >> $LINRIP_RC_PATH
+
+	echo "#DTS FOLDERS" >> $LINRIP_RC_PATH
+	echo "_DTS_FOLDER=\"dts/\"" >> $LINRIP_RC_PATH
+	echo "_DTS_OUTPUT_FOLDER=\"dts_orig/\"" >> $LINRIP_RC_PATH
+	echo "_DTS_ERROR_FOLDER=\"dts_error/\"" >> $LINRIP_RC_PATH
+	echo "_DTS_TEMP_FOLDER=\"dts_temp/\"" >> $LINRIP_RC_PATH
+	echo  >> $LINRIP_RC_PATH
+
+	echo "#HANDBRAKE FOLDERS" >> $LINRIP_RC_PATH
+	echo "_HANDBRAKE_INPUT_FOLDER=\"handbrake_input/\"" >> $LINRIP_RC_PATH
+	echo "_HANDBRAKE_INPUT_ORIG_FOLDER=\"handbrake_input_orig/\"" >> $LINRIP_RC_PATH
+	echo "_HANDBRAKE_OUTPUT_FOLDER=\"handbrake_output/\"" >> $LINRIP_RC_PATH
+	echo "_HANDBRAKE_ERROR_FOLDER=\"handbrake_error/\"" >> $LINRIP_RC_PATH
 }
 
 LINRIP_RC_PATH="$HOME/.linrip.rc"
@@ -171,9 +191,10 @@ readRc()	{
 	if [ -e "$LINRIP_RC_PATH" ];
 	then
 		source $LINRIP_RC_PATH
-		echo "RC VIDEO_BASE_PATH: $VIDEO_BASE_PATH"
 	else
-		timestamp "WARNING: No rc file found! Run linrip with -i <path to base directory>" >> $LOG_FILE
+		timestamp "ERROR: No rc file found! Run linrip with -i <path to base directory>" >> /dev/stdout
+		timestamp "ERROR: No rc file found! Run linrip with -i <path to base directory>" >> /dev/stdout
+		exit 0
 	fi
 }
 
@@ -188,27 +209,27 @@ readRc
 ###########################
 ##Script settings
 ##
-#VIDEO_BASE_PATH="."														#USE THE RC FILE TO SPECIFY THIS DIRECTORY!
+#VIDEO_BASE_PATH="."																		#USE THE RC FILE TO SPECIFY THIS DIRECTORY!
 ##
-LINRIP_PID_FILE="$VIDEO_BASE_PATH/linrip.pid"								#SAFTEY TO PREVENT MULTIPLE INSTANCES FROM RUNNING
+LINRIP_PID_FILE="$VIDEO_BASE_PATH/linrip.pid"												#SAFTEY TO PREVENT MULTIPLE INSTANCES FROM RUNNING
 ##
-FILE_SEARCH_CRITERIA="*.mkv"												#PATTERN TO USE FOR SCANNING MKV/DTS & MKV/AC3 FOLDERS
+FILE_SEARCH_CRITERIA="*.mkv"																#PATTERN TO USE FOR SCANNING MKV/DTS & MKV/AC3 FOLDERS
 ##
-VIDEO_INPUT_PATH="$VIDEO_BASE_PATH/dts/"									#LOCATION OF ORIGINAL MKV/DTS FILES
-VIDEO_INPUT_PROCESSED="$VIDEO_BASE_PATH/dts_orig/"							#LOCATION OF ORIGINAL MKV/DTS FILES AFTER COPY MADE MKV/AC3
-VIDEO_ERROR_PATH="$VIDEO_BASE_PATH/dts_error/"								#LOCATION OF ORIGINAL MKV/DTS FILES IF THERE WAS AN ERROR
-VIDEO_TEMP_PATH="$VIDEO_BASE_PATH/dts_temp/"								#TEMPORARY STORAGE PATH FOR CONVERTING DTS TO AC3
+VIDEO_INPUT_PATH="$VIDEO_BASE_PATH/$_DTS_FOLDER"											#LOCATION OF ORIGINAL MKV/DTS FILES
+VIDEO_INPUT_PROCESSED="$VIDEO_BASE_PATH/$_DTS_OUTPUT_FOLDER"								#LOCATION OF ORIGINAL MKV/DTS FILES AFTER COPY MADE MKV/AC3
+VIDEO_ERROR_PATH="$VIDEO_BASE_PATH/$_DTS_ERROR_FOLDER"										#LOCATION OF ORIGINAL MKV/DTS FILES IF THERE WAS AN ERROR
+VIDEO_TEMP_PATH="$VIDEO_BASE_PATH/$_DTS_TEMP_FOLDER"										#TEMPORARY STORAGE PATH FOR CONVERTING DTS TO AC3
 ##
-VIDEO_AC3_PATH="$VIDEO_BASE_PATH/handbrake_input/"							#LOCATION OF MKV/AC3 FILES TO BE COMPRESSED AND NORMALIZED
-VIDEO_AC3_FINISHED_PATH="$VIDEO_BASE_PATH/handbrake_input_orig/"			#LOCATION OF MKV/AC3 "ORIGINAL"
-VIDEO_ERROR_OUTPUT_PATH="$VIDEO_BASE_PATH/handbrake_error/"					#LOCATION OF MKV/AC3 "ORIGINAL" IF THERE WAS AN ERROR
-VIDEO_NORMALIZED_PATH="$VIDEO_BASE_PATH/handbrake_output/"					#LOCATION OF COMPRESSED & NORMALIZED MKV/AC3
+VIDEO_HANDBRAKE_INPUT_PATH="$VIDEO_BASE_PATH/$_HANDBRAKE_INPUT_FOLDER"						#LOCATION OF MKV/AC3 FILES TO BE COMPRESSED AND NORMALIZED
+VIDEO_HANDBRAKE_FINISHED_PATH="$VIDEO_BASE_PATH/$_HANDBRAKE_INPUT_ORIG_FOLDER"				#LOCATION OF MKV/AC3 "ORIGINAL"
+VIDEO_HANDBRAKE_ERROR_PATH="$VIDEO_BASE_PATH/$_HANDBRAKE_ERROR_FOLDER"						#LOCATION OF MKV/AC3 "ORIGINAL" IF THERE WAS AN ERROR
+VIDEO_HANDBRAKE_OUTPUT_PATH="$VIDEO_BASE_PATH/$_HANDBRAKE_OUTPUT_FOLDER"					#LOCATION OF COMPRESSED & NORMALIZED MKV/AC3
 ##
 #VIDEO_OUTPUT_PATH=""	#FINAL RESTING LOCATION OF MKV/AC3 COMPRESSED & NORMALIZED
 ##
 ## Handbrake - these can also be set as command line arguments!
-HANDBRAKE_CPU_LIMIT=500														#HANDBRAKE CPU LIMIT IN PERCENT
-HANDBRAKE_PRESET_NAME="HPDRC2"												#HANDBRAKE GUI PRESET NAME
+HANDBRAKE_CPU_LIMIT=500																		#HANDBRAKE CPU LIMIT IN PERCENT
+HANDBRAKE_PRESET_NAME="HPDRC2"																#HANDBRAKE GUI PRESET NAME
 ##
 #####################################################
 ## Maybe you shouldn't edit these, or should you?
@@ -224,7 +245,7 @@ DEBUG=0
 EXIT_ARG_ERROR=0
 EXIT_ARG_NO_ERROR=0
 
-while getopts "uhdco:p:l:e:b:i:" o; do
+while getopts "sv1uhdco:p:l:e:b:i:" o; do
     case "${o}" in
 	    h)
 		showHelp
@@ -238,35 +259,43 @@ while getopts "uhdco:p:l:e:b:i:" o; do
 		exit 0
 		;;
 	    o)	
-		echo "*OVERRIDE* VIDEO_OUTPUT_PATH: $OPTARG [old: $VIDEO_OUTPUT_PATH]"
+		timestamp "*OVERRIDE* VIDEO_OUTPUT_PATH: $OPTARG [old: $VIDEO_OUTPUT_PATH]" >> $LOG_FILE
 		VIDEO_OUTPUT_PATH=$OPTARG
 		;;
 	    p)	
-		echo "*OVERRIDE* HANDBRAKE_PRESET_NAME: $OPTARG [old: $HANDBRAKE_PRESET_NAME]"
+		timestamp "*OVERRIDE* HANDBRAKE_PRESET_NAME: $OPTARG [old: $HANDBRAKE_PRESET_NAME]" >> $LOG_FILE
 		HANDBRAKE_PRESET_NAME=$OPTARG
 		;;
 	    l)	
-		echo "*OVERRIDE* HANDBRAKE_CPU_LIMIT: $OPTARG [old: $HANDBRAKE_CPU_LIMIT]"
+		timestamp "*OVERRIDE* HANDBRAKE_CPU_LIMIT: $OPTARG [old: $HANDBRAKE_CPU_LIMIT]" >> $LOG_FILE
 		HANDBRAKE_CPU_LIMIT=$OPTARG
 		;;
 	    e)	
-		echo "*OVERRIDE* FILE_SEARCH_CRITERIA: $OPTARG [old: $FILE_SEARCH_CRITERIA]"
+		timestamp "*OVERRIDE* FILE_SEARCH_CRITERIA: $OPTARG [old: $FILE_SEARCH_CRITERIA]" >> $LOG_FILE
 		FILE_SEARCH_CRITERIA=$OPTARG
 		;;
 		u)
-		echo "Skipping DTS to AC3 Conversion step and processing only 1 file"
+		timestamp "Skipping DTS to AC3 Conversion step and processing only 1 file" >> $LOG_FILE
 		SKIP_DTS=1
 		;;
 		1)
-		echo "Processing only 1 file before exiting."
+		timestamp "Processing only 1 file before exiting." >> $LOG_FILE
 		ONE_AND_DONE=1
 		;;
+		s)
+		LOG_FILE="/dev/null"
+		SILENT_MODE=1
+		;;
+		v)
+		LOG_FILE="/dev/stdout"
+		timestamp "Logging all output to stdout" >> $LOG_FILE
+		;;
 		b)
-		echo "*OVERRIDE* VIDEO_BASE_PATH: $OPTARG [old: $VIDEO_BASE_PATH]"
+		timestamp "*OVERRIDE* VIDEO_BASE_PATH: $OPTARG [old: $VIDEO_BASE_PATH]" >> $LOG_FILE
 		VIDEO_BASE_PATH=$OPTARG
 		;;
 		i)
-		echo "Initializing linrip using directory: $OPTARG"
+		timestamp "Initializing linrip using directory: $OPTARG" >> $LOG_FILE
 		INIT_HOME_PATH=$OPTARG
 		initLinRip
 		exit 0
@@ -332,9 +361,9 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 			then
 				timestamp "Converting to AC3..." >> $LOG_FILE
 
-				mkdir -p $VIDEO_AC3_PATH$NEXT_PATH
+				mkdir -p $VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH
 
-				AC3_FULL_OUTPUT_PATH=$VIDEO_AC3_PATH$NEXT_PATH${NEXT_FILE%.*}"_ac3.mkv"
+				AC3_FULL_OUTPUT_PATH=$VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH${NEXT_FILE%.*}"_ac3.mkv"
 
 				#Convert DTS track to AC3
 				if [ $DEBUG -eq 1 ];
@@ -343,7 +372,15 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 					touch $AC3_FULL_OUTPUT_PATH
 					AC3_EXIT_STATUS=0
 				else
-					mkvdts2ac3.sh -n --wd $VIDEO_TEMP_PATH --new -nf "$VIDEO_AC3_PATH$NEXT_PATH" $NEXT_VIDEO_TO_PROCESS
+					MKVDTS2AC3_COMMAND="mkvdts2ac3.sh -n --wd $VIDEO_TEMP_PATH --new -nf \"$VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH\" $NEXT_VIDEO_TO_PROCESS"
+
+					if [ $SILENT_MODE -eq 1 ];
+					then
+						$MKVDTS2AC3_COMMAND >> /dev/null
+					else
+						$MKVDTS2AC3_COMMAND
+					fi
+
 					AC3_EXIT_STATUS=$?
 				fi
 
@@ -351,7 +388,7 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 
 				if [ $AC3_EXIT_STATUS -eq 1 ];
 				then
-					AC3_ERROR_OUTPUT_PATH=$VIDEO_ERROR_OUTPUT_PATH$NEXT_PATH
+					AC3_ERROR_OUTPUT_PATH=$VIDEO_HANDBRAKE_ERROR_PATH$NEXT_PATH
 					mkdir -p $AC3_ERROR_OUTPUT_PATH
 
 					mv $NEXT_VIDEO_TO_PROCESS $AC3_ERROR_OUTPUT_PATH$NEXT_FILE
@@ -372,9 +409,9 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 			elif [ "$NXTFMT" == "AC-3" ];
 			then
 				timestamp "File is already AC3." >> $LOG_FILE
-				mkdir -p $VIDEO_AC3_PATH$NEXT_PATH
-				mv $NEXT_VIDEO_TO_PROCESS $VIDEO_AC3_PATH$NEXT_PATH$NEXT_FILE
-				timestamp "Copied $NEXT_VIDEO_TO_PROCESS to $VIDEO_AC3_PATH$NEXT_PATH$NEXT_FILE" >> $LOG_FILE
+				mkdir -p $VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH
+				mv $NEXT_VIDEO_TO_PROCESS $VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH$NEXT_FILE
+				timestamp "Copied $NEXT_VIDEO_TO_PROCESS to $VIDEO_HANDBRAKE_INPUT_PATH$NEXT_PATH$NEXT_FILE" >> $LOG_FILE
 			else
 				timestamp "No routine defined for audio format: $NXTFMT" >> $LOG_FILE
 				mkdir -p $VIDEO_ERROR_PATH$NEXT_PATH
@@ -397,7 +434,7 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 	############ STEP 2 - Handbrake
 	######################################
 
-	AC3_TO_PROCESS=$(find $VIDEO_AC3_PATH -name $FILE_SEARCH_CRITERIA | head -1)
+	AC3_TO_PROCESS=$(find $VIDEO_HANDBRAKE_INPUT_PATH -name $FILE_SEARCH_CRITERIA | head -1)
 
 	if [ -z "$AC3_TO_PROCESS" ]
 	then
@@ -405,7 +442,7 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 	else
 	      # =================================================================================== #
 		#TO MAINTAIN DIRECTORY STRUCTURE, WE NEED TO UPDATE NEXT_PATH VARIABLE
-		NEXT_FILE_PATH_TRIMMED=$(echo $AC3_TO_PROCESS | sed "s@$VIDEO_AC3_PATH@@")
+		NEXT_FILE_PATH_TRIMMED=$(echo $AC3_TO_PROCESS | sed "s@$VIDEO_HANDBRAKE_INPUT_PATH@@")
 		NEXT_FILE=${NEXT_FILE_PATH_TRIMMED##*/}
 		NEXT_PATH=$(echo $NEXT_FILE_PATH_TRIMMED | sed "s@$NEXT_FILE@@")
 	      # =================================================================================== #
@@ -413,12 +450,12 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 		timestamp "AC3_TO_PROCESS: $AC3_TO_PROCESS" >> $LOG_FILE
 
 		#Make sure the handbrake output path exists
-		mkdir -p "$VIDEO_NORMALIZED_PATH$NEXT_PATH"
+		mkdir -p "$VIDEO_HANDBRAKE_OUTPUT_PATH$NEXT_PATH"
 
 	      # =================================================================================== #
 		#Configure HandBrake options
 		HANDBRAKE_INPUT="$AC3_TO_PROCESS"
-		HANDBRAKE_OUTPUT="$VIDEO_NORMALIZED_PATH$NEXT_PATH$NEXT_FILE"
+		HANDBRAKE_OUTPUT="$VIDEO_HANDBRAKE_OUTPUT_PATH$NEXT_PATH$NEXT_FILE"
 		HANDBRAKE_PRESET="--preset-import-gui -Z $HANDBRAKE_PRESET_NAME"	#Use GUI Presets
 	      # =================================================================================== #
 
@@ -472,9 +509,9 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 		#Move the original file to the processed location
 		if [ $SAVE_HANDBRAKE_INPUT -eq 1 ];
 		then
-			timestamp "Moving HandBrake input file in this location: $VIDEO_AC3_FINISHED_PATH$NEXT_PATH$NEXT_FILE" >> $LOG_FILE
-			mkdir -p $VIDEO_AC3_FINISHED_PATH$NEXT_PATH
-			mv $HANDBRAKE_INPUT $VIDEO_AC3_FINISHED_PATH$NEXT_PATH$NEXT_FILE
+			timestamp "Moving HandBrake input file in this location: $VIDEO_HANDBRAKE_FINISHED_PATH$NEXT_PATH$NEXT_FILE" >> $LOG_FILE
+			mkdir -p $VIDEO_HANDBRAKE_FINISHED_PATH$NEXT_PATH
+			mv $HANDBRAKE_INPUT $VIDEO_HANDBRAKE_FINISHED_PATH$NEXT_PATH$NEXT_FILE
 		else
 			timestamp "Deleting HandBrake input file: $HANDBRAKE_INPUT"
 			rm $HANDBRAKE_INPUT

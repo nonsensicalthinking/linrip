@@ -1,0 +1,8 @@
+# Ignore everything
+*
+
+# With these exceptions
+!bin/
+!README.md
+!LICENSE*
+!.gitignore
