@@ -9,6 +9,7 @@ Most BluRay videos these days are some form of DTS and many times they are annoy
 * HandBrake
 * HandBrakeCLI
 * mkvdts2ac3.sh (my modified version is included in this project, original can be found here: https://github.com/JakeWharton/mkvdts2ac3)
+* cpulimit
 * Plenty 'o disk space
 
 Requirements for mkvdts2ac3.sh (see also: https://github.com/JakeWharton/mkvdts2ac3)
