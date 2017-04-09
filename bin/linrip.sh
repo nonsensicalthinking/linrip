@@ -22,9 +22,6 @@
 ## 	- Compresses and normalizes MKV Video and Audio
 ## 	- Maintains directory structures
 ##
-##	TODO
-##	Rewrite so we have the option of going from either DTS, PCM or AC3 to HandBrake
-##		currently we only go from AC3 to HandBrake.
 ##
 ###########################
 ##### Functions
@@ -45,26 +42,16 @@ timestamp() {
 }
 
 queueNextFile() {
-	NEXT_VIDEO_TO_PROCESS=$(find $VIDEO_INPUT_PATH -name $FILE_SEARCH_CRITERIA | head -1)
+		NEXT_VIDEO_TO_PROCESS=$(find $VIDEO_INPUT_PATH -name $FILE_SEARCH_CRITERIA | head -1)
 }
 
 checkFileStructure() {
+
+	#DTS folders
 	if [ ! -d $VIDEO_INPUT_PATH ];
 	then
 		echo "Creating DTS Input folder... [$VIDEO_INPUT_PATH]"
 		mkdir -p $VIDEO_INPUT_PATH
-	fi
-
-	if [ ! -d $VIDEO_TEMP_PATH ];
-	then
-		echo "Creating DTS->AC3 Temp folder... [$VIDEO_TEMP_PATH]"
-		mkdir -p $VIDEO_TEMP_PATH
-	fi
-
-	if [ ! -d $VIDEO_ERROR_PATH ];
-	then
-		echo "Creating DTS->AC3 Error output folder... [$VIDEO_ERROR_PATH]"
-		mkdir -p $VIDEO_ERROR_PATH
 	fi
 
 	if [ ! -d $VIDEO_INPUT_PROCESSED ];
@@ -73,16 +60,36 @@ checkFileStructure() {
 		mkdir -p $VIDEO_INPUT_PROCESSED
 	fi
 
+	if [ ! -d $VIDEO_ERROR_PATH ];
+	then
+		echo "Creating DTS->AC3 Error output folder... [$VIDEO_ERROR_PATH]"
+		mkdir -p $VIDEO_ERROR_PATH
+	fi
+
+	if [ ! -d $VIDEO_TEMP_PATH ];
+	then
+		echo "Creating DTS->AC3 Temp folder... [$VIDEO_TEMP_PATH]"
+		mkdir -p $VIDEO_TEMP_PATH
+	fi
+
+
+	#HandBrake folders
 	if [ ! -d $VIDEO_HANDBRAKE_INPUT_PATH ];
 	then
-		echo "Creating AC3 folder... [$VIDEO_HANDBRAKE_INPUT_PATH]"
+		echo "Creating HandBrake input folder... [$VIDEO_HANDBRAKE_INPUT_PATH]"
 		mkdir -p $VIDEO_HANDBRAKE_INPUT_PATH
 	fi
 
-	if [ ! -d $VIDEO_AC3_FINISHED ];
+	if [ ! -d $VIDEO_HANDBRAKE_FINISHED_PATH ];
 	then
-		echo "Creating MKV/AC3 Original folder storage... [$VIDEO_AC3_FINISHED]"
-		mkdir -p $VIDEO_AC3_FINISHED
+		echo "Creating HandBrake orig folder... [$VIDEO_HANDBRAKE_FINISHED_PATH]"
+		mkdir -p $VIDEO_HANDBRAKE_FINISHED_PATH
+	fi
+
+	if [ ! -d $VIDEO_HANDBRAKE_ERROR_PATH ];
+	then
+		echo "Creating HandBrake Error output folder... [$VIDEO_HANDBRAKE_ERROR_PATH]"
+		mkdir -p $VIDEO_HANDBRAKE_ERROR_PATH
 	fi
 
 	if [ ! -d $VIDEO_HANDBRAKE_OUTPUT_PATH ];
@@ -91,17 +98,13 @@ checkFileStructure() {
 		mkdir -p $VIDEO_HANDBRAKE_OUTPUT_PATH
 	fi
 
+	#Script folders
 	if [ ! -d $VIDEO_OUTPUT_PATH ];
 	then
 		echo "Creating Final resting place of converted video... [$VIDEO_OUTPUT_PATH]"
 		mkdir -p $VIDEO_OUTPUT_PATH
 	fi
 
-	if [ ! -d $VIDEO_HANDBRAKE_ERROR_PATH ];
-	then
-		echo "Creating HandBrake Error output folder... [$VIDEO_HANDBRAKE_ERROR_PATH]"
-		mkdir -p $VIDEO_HANDBRAKE_ERROR_PATH
-	fi
 }
 
 showHelp() {
@@ -169,6 +172,8 @@ initLinRip()	{
 	echo "SAVE_HANDBRAKE_INPUT=1" >> $LINRIP_RC_PATH
 	echo "SAVE_DTS_INPUT=1" >> $LINRIP_RC_PATH
 	echo "SKIP_DTS=0" >> $LINRIP_RC_PATH
+	ehco "SILENT_MODE=0" >> $LINRIP_RC_PATH
+	echo "FILE_SEARCH_CRITERIA=\"\"" >> $LINRIP_RC_PATH
 	echo >> $LINRIP_RC_PATH
 
 	echo "#DTS FOLDERS" >> $LINRIP_RC_PATH
@@ -183,6 +188,12 @@ initLinRip()	{
 	echo "_HANDBRAKE_INPUT_ORIG_FOLDER=\"handbrake_input_orig/\"" >> $LINRIP_RC_PATH
 	echo "_HANDBRAKE_OUTPUT_FOLDER=\"handbrake_output/\"" >> $LINRIP_RC_PATH
 	echo "_HANDBRAKE_ERROR_FOLDER=\"handbrake_error/\"" >> $LINRIP_RC_PATH
+	echo >> $LINRIP_RC_PATH
+
+	echo "#HANDBRAKE SETTINGS"
+	echo "LIMIT_CPU=1" >> $LINRIP_RC_PATH
+	echo "HANDBRAKE_CPU_LIMIT=500" >> $LINRIP_RC_PATH
+	echo "HANDBRAKE_PRESET_NAME=\"\"" >> $LINRIP_RC_PATH
 }
 
 LINRIP_RC_PATH="$HOME/.linrip.rc"
@@ -198,6 +209,11 @@ readRc()	{
 	fi
 }
 
+checkForHandBrakePid() {
+	sleep 1 #Give screen enough time to start up the processes
+	HANDBRAKE_PID=$(pgrep -n -f HandBrakeCLI)
+}
+
 ############################################################################################################
 ############ BEGIN PROCESS
 ############################################################################################################
@@ -209,13 +225,9 @@ readRc
 ###########################
 ##Script settings
 ##
-#VIDEO_BASE_PATH="."																		#USE THE RC FILE TO SPECIFY THIS DIRECTORY!
-##
 LINRIP_PID_FILE="$VIDEO_BASE_PATH/linrip.pid"												#SAFTEY TO PREVENT MULTIPLE INSTANCES FROM RUNNING
 ##
 LINRIP_BIN_PATH="$VIDEO_BASE_PATH/bin"														#PATH TO LINRIP SCRIPTS
-##
-FILE_SEARCH_CRITERIA="*.mkv"																#PATTERN TO USE FOR SCANNING MKV/DTS & MKV/AC3 FOLDERS
 ##
 VIDEO_INPUT_PATH="$VIDEO_BASE_PATH/$_DTS_FOLDER"											#LOCATION OF ORIGINAL MKV/DTS FILES
 VIDEO_INPUT_PROCESSED="$VIDEO_BASE_PATH/$_DTS_OUTPUT_FOLDER"								#LOCATION OF ORIGINAL MKV/DTS FILES AFTER COPY MADE MKV/AC3
@@ -227,17 +239,10 @@ VIDEO_HANDBRAKE_FINISHED_PATH="$VIDEO_BASE_PATH/$_HANDBRAKE_INPUT_ORIG_FOLDER"		
 VIDEO_HANDBRAKE_ERROR_PATH="$VIDEO_BASE_PATH/$_HANDBRAKE_ERROR_FOLDER"						#LOCATION OF MKV/AC3 "ORIGINAL" IF THERE WAS AN ERROR
 VIDEO_HANDBRAKE_OUTPUT_PATH="$VIDEO_BASE_PATH/$_HANDBRAKE_OUTPUT_FOLDER"					#LOCATION OF COMPRESSED & NORMALIZED MKV/AC3
 ##
-#VIDEO_OUTPUT_PATH=""	#FINAL RESTING LOCATION OF MKV/AC3 COMPRESSED & NORMALIZED
-##
-## Handbrake - these can also be set as command line arguments!
-HANDBRAKE_CPU_LIMIT=500																		#HANDBRAKE CPU LIMIT IN PERCENT
-HANDBRAKE_PRESET_NAME="HPDRC2"																#HANDBRAKE GUI PRESET NAME
-##
 #####################################################
 ## Maybe you shouldn't edit these, or should you?
 #####################################################
 ONE_AND_DONE=0
-SKIP_STEP_1_AND_DONE=0
 ## Logging
 LOG_FILE="$VIDEO_BASE_PATH/conversion.log"
 #LOG_FILE="/dev/stdout"
@@ -277,7 +282,7 @@ while getopts "sv1uhdco:p:l:e:b:i:" o; do
 		FILE_SEARCH_CRITERIA=$OPTARG
 		;;
 		u)
-		timestamp "Skipping DTS to AC3 Conversion step and processing only 1 file" >> $LOG_FILE
+		timestamp "Skipping DTS to AC3 Conversion step." >> $LOG_FILE
 		SKIP_DTS=1
 		;;
 		1)
@@ -325,7 +330,14 @@ preventMultipleInstances
 
 queueNextFile
 
-until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
+STOP_LOOPING=0
+
+if [ -z "$NEXT_VIDEO_TO_PROCESS" ] && [ $SKIP_DTS -eq 0 ];
+then
+	STOP_LOOPING=1
+fi
+
+until [ $STOP_LOOPING -eq 1 ]; do
 	
 	timestamp "==================================================" >> $LOG_FILE
 	if [ $SKIP_DTS -eq 1 ];
@@ -443,6 +455,7 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 	if [ -z "$AC3_TO_PROCESS" ]
 	then
 		timestamp "No AC3 files found for compression/normalization." >> $LOG_FILE
+		customExit
 	else
 	      # =================================================================================== #
 		#TO MAINTAIN DIRECTORY STRUCTURE, WE NEED TO UPDATE NEXT_PATH VARIABLE
@@ -484,19 +497,30 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 			touch $HANDBRAKE_OUTPUT
 		else
 			#Check if we have another handbrake session running currently...
-			HANDBRAKE_PID=$(ps -eo pid,command | grep -v "SCREEN -d -m sh -c HandBrakeCLI" | grep -v "sh -c HandBrakeCLI" | grep "HandBrakeCLI" | grep -v grep | awk '{print $1}')
-			
+			checkForHandBrakePid
+
 			if [ -z "$HANDBRAKE_PID" ];
 			then
 				#Execute Handbrake command
-				screen -d -m sh -c "$HANDBRAKE_CLI_COMMAND"
-				
-				HANDBRAKE_PID=$(ps -eo pid,command | grep -v "SCREEN -d -m sh -c HandBrakeCLI" | grep -v "sh -c HandBrakeCLI" | grep "HandBrakeCLI" | grep -v grep | awk '{print $1}')
 
-				timestamp "Handbrake PID: $HANDBRAKE_PID" >> $LOG_FILE
+				if [ $LIMIT_CPU -eq 1 ];
+				then
+					screen -d -m sh -c "$HANDBRAKE_CLI_COMMAND"
+					
+					checkForHandBrakePid
 
-				#Limit Handbrake's CPU usage so other tasks can continue to run, this is a long running process...
-				cpulimit -p $HANDBRAKE_PID -l $HANDBRAKE_CPU_LIMIT
+					if [ -z "$HANDBRAKE_PID" ];
+					then
+						timestamp "Error: No HandBrake PID found. Please check if HandBrakeCLI is running." >> $LOG_FILE
+					else
+						timestamp "Handbrake PID: $HANDBRAKE_PID" >> $LOG_FILE
+
+						#Limit Handbrake's CPU usage so other tasks can continue to run, this is a long running process...
+						cpulimit -p $HANDBRAKE_PID -l $HANDBRAKE_CPU_LIMIT
+					fi
+				else
+					$HANDBRAKE_CLI_COMMAND
+				fi
 
 				#Update the file info to indicate it has been modified
 				CURRENT_TITLE=$(mediainfo $HANDBRAKE_OUTPUT --Inform="General;%Title%")
@@ -539,7 +563,21 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 	fi
 
 	#queue the next video to process
-	queueNextFile
+	if [ $SKIP_DTS -eq 0 ];
+	then
+		queueNextFile
+		if [ -z "$NEXT_VIDEO_TO_PROCESS" ];
+		then
+			customExit
+		fi
+	else
+		#Check if there is a reason for another loop
+		AC3_TO_PROCESS=$(find $VIDEO_HANDBRAKE_INPUT_PATH -name $FILE_SEARCH_CRITERIA | head -1)
+		if [ -z "$AC3_TO_PROCESS" ];
+		then
+			customExit
+		fi
+	fi
 done
 
 customExit
