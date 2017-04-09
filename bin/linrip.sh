@@ -513,7 +513,7 @@ until [ -z "$NEXT_VIDEO_TO_PROCESS" ]; do
 			mkdir -p $VIDEO_HANDBRAKE_FINISHED_PATH$NEXT_PATH
 			mv $HANDBRAKE_INPUT $VIDEO_HANDBRAKE_FINISHED_PATH$NEXT_PATH$NEXT_FILE
 		else
-			timestamp "Deleting HandBrake input file: $HANDBRAKE_INPUT"
+			timestamp "Deleting HandBrake input file: $HANDBRAKE_INPUT" >> $LOG_FILE
 			rm $HANDBRAKE_INPUT
 		fi
 
