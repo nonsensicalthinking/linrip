@@ -544,7 +544,7 @@ until [ $STOP_LOOPING -eq 1 ]; do
 			rm $HANDBRAKE_INPUT
 		fi
 
-		if [ -z "$VIDEO_OUTPUT_PATH" ];
+		if [ -n "$VIDEO_OUTPUT_PATH" ];
 		then
 			#Move the compressed/normalized file to its final destination
 			timestamp "Moving the finished product to the $VIDEO_OUTPUT_PATH$NEXT_PATH_$NEXT_FILE" >> $LOG_FILE
