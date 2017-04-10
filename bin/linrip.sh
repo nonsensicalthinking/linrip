@@ -1,6 +1,6 @@
 #!/bin/bash
 ####################################################################################################################################################
-## linrip.sh - Linux BluRay Video Groomer
+## linrip.sh - Linux Video Groomer
 ## by nonsensicalthinking
 ## 
 ## This script relies on 
@@ -547,9 +547,9 @@ until [ $STOP_LOOPING -eq 1 ]; do
 		if [ -n "$VIDEO_OUTPUT_PATH" ];
 		then
 			#Move the compressed/normalized file to its final destination
-			timestamp "Moving the finished product to the $VIDEO_OUTPUT_PATH$NEXT_PATH_$NEXT_FILE" >> $LOG_FILE
+			timestamp "Moving the finished product to the $VIDEO_OUTPUT_PATH$NEXT_PATH$NEXT_FILE" >> $LOG_FILE
 			mkdir -p $VIDEO_OUTPUT_PATH$NEXT_PATH
-			mv $HANDBRAKE_OUTPUT $VIDEO_OUTPUT_PATH$NEXT_PATH_$NEXT_FILE
+			mv $HANDBRAKE_OUTPUT $VIDEO_OUTPUT_PATH$NEXT_PATH$NEXT_FILE
 		fi
 
 		timestamp "Finished processing." >> $LOG_FILE
