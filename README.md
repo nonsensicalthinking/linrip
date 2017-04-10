@@ -1,5 +1,5 @@
 # linrip
-Linux BluRay Grooming Script. Convert DTS to AC3 for audio normalization in HandBrake. Process video file using HandBrakeCLI using HandBrake GUI Presets. The script maintains directory structures of the input directories (see more about this in the usage section). You can skip the DTS to AC3 conversion step using the `-u` flag.  Don't get trapped in the mindset! The HandBrakeCLI input file format doesn't need to be AC3!  This script will process files found in the designated input directory one by one in a fifo order until all files are processed, unless you specify the `-1` one and done option.
+Linux Video Grooming Script. Convert DTS to AC3 for audio normalization in HandBrake. Process video file using HandBrakeCLI using HandBrake GUI Presets. The script maintains directory structures of the input directories (see more about this in the usage section). You can skip the DTS to AC3 conversion step using the `-u` flag.  Don't get trapped in the mindset! The HandBrakeCLI input file format doesn't need to be AC3!  This script will process files found in the designated input directory one by one in a fifo order until all files are processed, unless you specify the `-1` one and done option.
 
 ## Features
 * Convert DTS to AC3 for Dynamic Range Compression
@@ -8,14 +8,15 @@ Linux BluRay Grooming Script. Convert DTS to AC3 for audio normalization in Hand
 * Automated cpu usage limiting for HandBrakeCLI compression
 
 ## Usage
-Most BluRay videos these days are some form of DTS and many times they are annoyingly soft and suddenly loud.  This script was designed to take MKV files with DTS* audio and convert the MKV file's audio to AC3 so the audio hints are there.  This is the only way to utilize HandBrake's Dynamic Range Compression (DRC).  __This feature only works with AC3 audio__.  You'll also need to configure this properly on your HandBrake preset if you intend to use it.
+This script was designed to take MKV files with DTS* audio and convert the MKV file's audio to AC3 so the audio hints are there.  This is the only way to utilize HandBrake's Dynamic Range Compression (DRC).  __This feature only works with AC3 audio__.  You'll also need to configure this properly on your HandBrake preset if you intend to use it.
 
 ### Prerequisites
 
 * HandBrake
 * HandBrakeCLI
 * mkvdts2ac3.sh (my modified version is included in this project, original can be found here: https://github.com/JakeWharton/mkvdts2ac3)
-* cpulimit
+* cpulimit (available from ubuntu apt)
+* screen (available from ubuntu apt)
 * Plenty 'o disk space
 
 Requirements for mkvdts2ac3.sh (see also: https://github.com/JakeWharton/mkvdts2ac3)
