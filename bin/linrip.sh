@@ -577,6 +577,12 @@ until [ $STOP_LOOPING -eq 1 ]; do
 			customExit
 		fi
 	fi
+
+	if [ -e "$VIDEO_BASE_PATH/stop" ];
+	then
+		rm "$VIDEO_BASE_PATH/stop"
+		customExit
+	fi
 done
 
 customExit
