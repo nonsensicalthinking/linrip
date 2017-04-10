@@ -43,6 +43,7 @@ timestamp() {
 
 queueNextFile() {
 		NEXT_VIDEO_TO_PROCESS=$(find $VIDEO_INPUT_PATH -name $FILE_SEARCH_CRITERIA | head -1)
+		NUM_FILES_FOUND_BY_CRITERIA=$(find $VIDEO_INPUT_PATH -name $FILE_SEARCH_CRITERIA | wc -l)
 }
 
 checkFileStructure() {
@@ -357,6 +358,8 @@ until [ $STOP_LOOPING -eq 1 ]; do
 		timestamp "[VAR] NEXT_FILE: $NEXT_FILE" >> $LOG_FILE
 		timestamp "[VAR] OUTPUT_LOCATION: $OUTPUT_LOCATION" >> $LOG_FILE
 
+		timestamp "[DTS BEGIN] Number of DTS input files found [$NUM_FILES_FOUND_BY_CRITERIA] by search criteria: $FILE_SEARCH_CRITERIA" >> $LOG_FILE
+
 		######################################
 		############ STEP 1 - DTS* -> AC3
 		######################################
@@ -450,28 +453,31 @@ until [ $STOP_LOOPING -eq 1 ]; do
 	############ STEP 2 - Handbrake
 	######################################
 
-	AC3_TO_PROCESS=$(find $VIDEO_HANDBRAKE_INPUT_PATH -name $FILE_SEARCH_CRITERIA | head -1)
+	HANDBRAKE_TO_PROCESS=$(find $VIDEO_HANDBRAKE_INPUT_PATH -name $FILE_SEARCH_CRITERIA | head -1)
+	NUM_HANDBRAKE_TO_PROCESS=$(find $VIDEO_HANDBRAKE_INPUT_PATH -name $FILE_SEARCH_CRITERIA | wc -l)
 
-	if [ -z "$AC3_TO_PROCESS" ]
+	timestamp "[HANDBRAKE BEGIN] Number of HandBrake input files found [$NUM_HANDBRAKE_TO_PROCESS] by search criteria: $FILE_SEARCH_CRITERIA" >> $LOG_FILE
+
+	if [ -z "$HANDBRAKE_TO_PROCESS" ]
 	then
-		timestamp "No AC3 files found for compression/normalization." >> $LOG_FILE
+		timestamp "No HandBrake files found for processing." >> $LOG_FILE
 		customExit
 	else
 	      # =================================================================================== #
 		#TO MAINTAIN DIRECTORY STRUCTURE, WE NEED TO UPDATE NEXT_PATH VARIABLE
-		NEXT_FILE_PATH_TRIMMED=$(echo $AC3_TO_PROCESS | sed "s@$VIDEO_HANDBRAKE_INPUT_PATH@@")
+		NEXT_FILE_PATH_TRIMMED=$(echo $HANDBRAKE_TO_PROCESS | sed "s@$VIDEO_HANDBRAKE_INPUT_PATH@@")
 		NEXT_FILE=${NEXT_FILE_PATH_TRIMMED##*/}
 		NEXT_PATH=$(echo $NEXT_FILE_PATH_TRIMMED | sed "s@$NEXT_FILE@@")
 	      # =================================================================================== #
 
-		timestamp "AC3_TO_PROCESS: $AC3_TO_PROCESS" >> $LOG_FILE
+		timestamp "Processing file: $HANDBRAKE_TO_PROCESS" >> $LOG_FILE
 
 		#Make sure the handbrake output path exists
 		mkdir -p "$VIDEO_HANDBRAKE_OUTPUT_PATH$NEXT_PATH"
 
 	      # =================================================================================== #
 		#Configure HandBrake options
-		HANDBRAKE_INPUT="$AC3_TO_PROCESS"
+		HANDBRAKE_INPUT="$HANDBRAKE_TO_PROCESS"
 		HANDBRAKE_OUTPUT="$VIDEO_HANDBRAKE_OUTPUT_PATH$NEXT_PATH$NEXT_FILE"
 		HANDBRAKE_PRESET="--preset-import-gui -Z $HANDBRAKE_PRESET_NAME"	#Use GUI Presets
 	      # =================================================================================== #
@@ -487,7 +493,7 @@ until [ $STOP_LOOPING -eq 1 ]; do
 		HANDBRAKE_CLI_COMMAND="HandBrakeCLI -i \"$HANDBRAKE_INPUT\" -o \"$HANDBRAKE_OUTPUT\" $HANDBRAKE_PRESET"
 	      # =================================================================================== #
 
-		timestamp "Processing: $NEXT_FILE ($AC3_TO_PROCESS)" >> $LOG_FILE
+		timestamp "Processing: $NEXT_FILE ($HANDBRAKE_TO_PROCESS)" >> $LOG_FILE
 		timestamp "Executing: $HANDBRAKE_CLI_COMMAND" >> $LOG_FILE
 
 		if [ $DEBUG -eq 1 ];
@@ -571,8 +577,8 @@ until [ $STOP_LOOPING -eq 1 ]; do
 		fi
 	else
 		#Check if there is a reason for another loop
-		AC3_TO_PROCESS=$(find $VIDEO_HANDBRAKE_INPUT_PATH -name $FILE_SEARCH_CRITERIA | head -1)
-		if [ -z "$AC3_TO_PROCESS" ];
+		HANDBRAKE_TO_PROCESS=$(find $VIDEO_HANDBRAKE_INPUT_PATH -name $FILE_SEARCH_CRITERIA | head -1)
+		if [ -z "$HANDBRAKE_TO_PROCESS" ];
 		then
 			customExit
 		fi
