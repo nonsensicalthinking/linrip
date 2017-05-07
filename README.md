@@ -22,11 +22,16 @@ This script was designed to take MKV files with DTS* audio and convert the MKV f
 Requirements for mkvdts2ac3.sh (see also: https://github.com/JakeWharton/mkvdts2ac3)
 these can be obtained via apt in Ubuntu 16.
 
-`sudo apt install mkvtoolnix ffmpeg rsync`
+`sudo apt install mkvtoolnix ffmpeg rsync screen mediainfo handbrake handbrake-cli cpulimit`
 
 * mkvtoolnix
 * ffmpeg
 * rsync
+* screen
+* mediainfo
+* handbrake
+* handbrake-cli
+* cpulimit
 
 ### Configuration
 1. Clone the project to a drive with lots of free storage space.  This will be your conversion working directory where files will be stored while they are moved through the conversion process. `git clone https://github.com/nonsensicalthinking/linrip.git`

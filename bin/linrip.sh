@@ -173,7 +173,7 @@ initLinRip()	{
 	echo "SAVE_HANDBRAKE_INPUT=1" >> $LINRIP_RC_PATH
 	echo "SAVE_DTS_INPUT=1" >> $LINRIP_RC_PATH
 	echo "SKIP_DTS=0" >> $LINRIP_RC_PATH
-	ehco "SILENT_MODE=0" >> $LINRIP_RC_PATH
+	echo "SILENT_MODE=0" >> $LINRIP_RC_PATH
 	echo "FILE_SEARCH_CRITERIA=\"\"" >> $LINRIP_RC_PATH
 	echo >> $LINRIP_RC_PATH
 
@@ -191,7 +191,7 @@ initLinRip()	{
 	echo "_HANDBRAKE_ERROR_FOLDER=\"handbrake_error/\"" >> $LINRIP_RC_PATH
 	echo >> $LINRIP_RC_PATH
 
-	echo "#HANDBRAKE SETTINGS"
+	echo "#HANDBRAKE SETTINGS" >> $LINRIP_RC_PATH
 	echo "LIMIT_CPU=1" >> $LINRIP_RC_PATH
 	echo "HANDBRAKE_CPU_LIMIT=500" >> $LINRIP_RC_PATH
 	echo "HANDBRAKE_PRESET_NAME=\"\"" >> $LINRIP_RC_PATH
@@ -206,7 +206,7 @@ readRc()	{
 	else
 		timestamp "ERROR: No rc file found! Run linrip with -i <path to base directory>" >> /dev/stdout
 		timestamp "ERROR: No rc file found! Run linrip with -i <path to base directory>" >> /dev/stdout
-		exit 0
+#		exit 0
 	fi
 }
 
@@ -255,30 +255,30 @@ EXIT_ARG_NO_ERROR=0
 
 while getopts "sv1uhdco:p:l:e:b:i:" o; do
     case "${o}" in
-	    h)
+	    	h)
 		showHelp
 		exit 0
 		;;
-	    d)
+	    	d)
 		DEBUG=1
 		;;
 		c)
 		checkFileStructure
 		exit 0
 		;;
-	    o)	
+	    	o)	
 		timestamp "*OVERRIDE* VIDEO_OUTPUT_PATH: $OPTARG [old: $VIDEO_OUTPUT_PATH]" >> $LOG_FILE
 		VIDEO_OUTPUT_PATH=$OPTARG
 		;;
-	    p)	
+	    	p)	
 		timestamp "*OVERRIDE* HANDBRAKE_PRESET_NAME: $OPTARG [old: $HANDBRAKE_PRESET_NAME]" >> $LOG_FILE
 		HANDBRAKE_PRESET_NAME=$OPTARG
 		;;
-	    l)	
+	    	l)	
 		timestamp "*OVERRIDE* HANDBRAKE_CPU_LIMIT: $OPTARG [old: $HANDBRAKE_CPU_LIMIT]" >> $LOG_FILE
 		HANDBRAKE_CPU_LIMIT=$OPTARG
 		;;
-	    e)	
+	    	e)	
 		timestamp "*OVERRIDE* FILE_SEARCH_CRITERIA: $OPTARG [old: $FILE_SEARCH_CRITERIA]" >> $LOG_FILE
 		FILE_SEARCH_CRITERIA=$OPTARG
 		;;
@@ -308,7 +308,7 @@ while getopts "sv1uhdco:p:l:e:b:i:" o; do
 		initLinRip
 		exit 0
 		;;
-	    *)
+	    	*)
 		EXIT_ARG_ERROR=1
 		;;
     esac
@@ -449,6 +449,7 @@ until [ $STOP_LOOPING -eq 1 ]; do
 			fi
 		fi
 	fi
+	
 	######################################
 	############ STEP 2 - Handbrake
 	######################################
